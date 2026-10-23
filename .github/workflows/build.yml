@@ -111,3 +111,18 @@ jobs:
         export ASEPRITE=$PWD/build/bin/aseprite
         cd tests
         $XVFB bash run-tests.sh
+    - name: Package artifacts
+      shell: bash
+      run: |
+        mkdir -p dist
+        cp -r build/bin dist/bin
+        # 如果 gui 版本还需要 data/ 等资源，一起复制：
+        # cp -r data dist/data
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: aseprite-${{ matrix.build_type }}-${{ matrix.ui }}-${{ matrix.scripting }}
+        path: dist/
+        if-no-files-found: error      # 一个文件都没打包出来时直接报红，别静默通过
+        retention-days: 7
